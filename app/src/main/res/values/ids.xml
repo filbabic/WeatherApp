@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="main_activity_view_pager" type="id" />
+    <item name="main_activity_view_pager_tabs" type="id" />
+    <item name="main_activity_frame_layout" type="id" />
+    <item name="add_location_activity_frame_layout" type="id" />
+    <item name="browse_locations_recycler_view" type="id" />
+    <item name="location_list_item_text_view" type="id" />
+
+    <item name="menu_add_new_location" type="id" />
+    <item name="menu_browse_recent_locations" type="id" />
+
+    <item name="forecast_view_temperature_text_view" type="id" />
+    <item name="forecast_view_pressure_text_view" type="id" />
+    <item name="forecast_view_wind_text_view" type="id" />
+    <item name="forecast_view_description_text_view" type="id" />
+    <item name="forecast_view_weather_icon_image_view" type="id" />
+    <item name="forecast_view_time_of_day_text_view" type="id" />
+
+    <item name="fragment_add_location_enter_city_edit_text" type="id" />
+    <item name="fragment_add_location_button" type="id" />
+
+    <item name="forecast_fragment_recycler_view" type="id" />
+    <item name="forecast_fragment_frame_layout" type="id" />
+    <item name="browse_locations_activity_frame_layout" type="id" />
+</resources>
