@@ -38,5 +38,4 @@ public class WeatherResponse implements Serializable {
     public String getDt_txt() {
         return dt_txt;
     }
-
 }

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="toolbar" type="id" />
+    <item name="main_activity_drawer_layout" type="id" />
+    <item name="main_activity_navigation_view" type="id" />
     <item name="main_activity_view_pager" type="id" />
     <item name="main_activity_view_pager_tabs" type="id" />
     <item name="main_activity_frame_layout" type="id" />
@@ -23,4 +26,6 @@
     <item name="forecast_fragment_recycler_view" type="id" />
     <item name="forecast_fragment_frame_layout" type="id" />
     <item name="browse_locations_activity_frame_layout" type="id" />
+
+    <item name="forecast_display_activity_frame_layout" type="id" />
 </resources>

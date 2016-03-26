@@ -10,6 +10,4 @@ public class Constants {
     public final static String CITY_QUERY_KEY = "q";
     public final static String CITY_BUNDLE_KEY = "city";
     public final static String IMAGE_BASE_URL = "http://openweathermap.org/img/w/";
-
-
 }
