@@ -1,6 +1,7 @@
 package com.example.filip.weatherappmvpfinal.helpers.database;
 
 import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
+import com.example.filip.weatherappmvpfinal.pojo.WeatherResponse;
 
 import java.util.ArrayList;
 
@@ -10,9 +11,17 @@ import java.util.ArrayList;
 public interface DatabaseHelper {
     void addLocation(LocationWrapper locationWrapper);
 
+    void saveWeatherResponseToDatabase(WeatherResponse response, String city);
+
+    void updateWeatherResponseInDatabase(WeatherResponse response, String city);
+
+    boolean locationIsCached(String city);
+
     void deleteLocation(LocationWrapper locationWrapper);
 
     boolean checkIfLocationExists(LocationWrapper locationWrapper);
 
     ArrayList<LocationWrapper> getLocations();
+
+    WeatherResponse getResponseFromDatabase(String city);
 }

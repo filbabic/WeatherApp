@@ -28,4 +28,5 @@
     <item name="browse_locations_activity_frame_layout" type="id" />
 
     <item name="forecast_display_activity_frame_layout" type="id" />
+    <item name="floating_action_button" type="id" />
 </resources>

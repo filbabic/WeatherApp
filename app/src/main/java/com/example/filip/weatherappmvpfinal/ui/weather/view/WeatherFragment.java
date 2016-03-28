@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,19 +16,20 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.filip.weatherappmvpfinal.R;
 import com.example.filip.weatherappmvpfinal.constants.Constants;
+import com.example.filip.weatherappmvpfinal.helpers.database.WeatherDatabase;
 import com.example.filip.weatherappmvpfinal.ui.weather.presenter.WeatherFragmentPresenter;
 import com.example.filip.weatherappmvpfinal.ui.weather.presenter.WeatherFragmentPresenterImpl;
 
 /**
  * Created by Filip on 26/03/2016.
  */
-public class WeatherFragment extends Fragment implements WeatherFragmentView {
+public class WeatherFragment extends Fragment implements WeatherFragmentView, View.OnClickListener {
     private TextView mTemperature;
     private TextView mPressure;
     private TextView mWind;
     private TextView mDescription;
     private ImageView mWeatherIcon;
-
+    private FloatingActionButton mRefreshFloatingActionButton;
     private WeatherFragmentPresenter presenter;
 
     public static WeatherFragment newInstance(String city) {
@@ -41,7 +43,7 @@ public class WeatherFragment extends Fragment implements WeatherFragmentView {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.forecast_weather_item, container, false);
+        return inflater.inflate(R.layout.fragment_weather, container, false);
     }
 
     @Override
@@ -56,19 +58,24 @@ public class WeatherFragment extends Fragment implements WeatherFragmentView {
         initPresenter();
         if (checkIfNetworkIsAvailable()) {
             presenter.sendRequestToAPI(this.getArguments().getString(Constants.CITY_BUNDLE_KEY));
+        } else {
+            presenter.getLastStoredRequestFromDatabase(this.getArguments().getString(Constants.CITY_BUNDLE_KEY));
         }
     }
 
-    private void initUI(View itemView) {
-        mTemperature = (TextView) itemView.findViewById(R.id.forecast_view_temperature_text_view);
-        mPressure = (TextView) itemView.findViewById(R.id.forecast_view_pressure_text_view);
-        mWind = (TextView) itemView.findViewById(R.id.forecast_view_wind_text_view);
-        mDescription = (TextView) itemView.findViewById(R.id.forecast_view_description_text_view);
-        mWeatherIcon = (ImageView) itemView.findViewById(R.id.forecast_view_weather_icon_image_view);
+    private void initUI(View view) {
+        mRefreshFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.floating_action_button);
+        mRefreshFloatingActionButton.setOnClickListener(this);
+        mTemperature = (TextView) view.findViewById(R.id.forecast_view_temperature_text_view);
+        mPressure = (TextView) view.findViewById(R.id.forecast_view_pressure_text_view);
+        mWind = (TextView) view.findViewById(R.id.forecast_view_wind_text_view);
+        mDescription = (TextView) view.findViewById(R.id.forecast_view_description_text_view);
+        mWeatherIcon = (ImageView) view.findViewById(R.id.forecast_view_weather_icon_image_view);
     }
 
     private void initPresenter() {
-        presenter = new WeatherFragmentPresenterImpl(this);
+        WeatherDatabase database = new WeatherDatabase(getActivity());
+        presenter = new WeatherFragmentPresenterImpl(this, database);
     }
 
     @Override
@@ -101,5 +108,17 @@ public class WeatherFragment extends Fragment implements WeatherFragmentView {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnectedOrConnecting());
+    }
+
+    private void refreshCurrentData() {
+        if (checkIfNetworkIsAvailable()) {
+            presenter.sendRequestToAPI(this.getArguments().getString(Constants.CITY_BUNDLE_KEY));
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v instanceof FloatingActionButton)
+            refreshCurrentData();
     }
 }

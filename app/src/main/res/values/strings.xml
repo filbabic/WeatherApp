@@ -13,8 +13,8 @@
     <string name="request_failed_toast_message">Request failed!</string>
     <string name="added_current_location_toast_message">"Added current location: "</string>
     <string name="current_location_failure_toast_message">Cannot add current location, check if location service is available!</string>
-    <string name="drawer_header_text_view">Welcome to GPS tracking App!</string>
-    <string name="main_activity_title">Welcome to GPS tracker!</string>
+    <string name="drawer_header_text_view">Welcome to WeatherApp!</string>
+    <string name="main_activity_title">WeatherApp</string>
     <string name="add_location_activity_title">Add a new location!</string>
     <string name="recent_locations_toolbar_title">Recently added locations!</string>
 </resources>

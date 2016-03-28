@@ -1,5 +1,6 @@
 package com.example.filip.weatherappmvpfinal.ui.location.presenter.add;
 
+import com.example.filip.weatherappmvpfinal.helpers.database.WeatherDatabase;
 import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
 import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
@@ -13,9 +14,9 @@ public class AddLocationPresenterImpl implements AddLocationFragmentPresenter {
     private final AddLocationView addLocationView;
     private final DatabaseHelper databaseHelper;
 
-    public AddLocationPresenterImpl(AddLocationView view, LocationDatabase database) {
+    public AddLocationPresenterImpl(AddLocationView view, LocationDatabase locationDatabase, WeatherDatabase weatherDatabase) {
         this.addLocationView = view;
-        this.databaseHelper = new DatabaseHelperImpl(database);
+        this.databaseHelper = new DatabaseHelperImpl(locationDatabase, weatherDatabase);
     }
 
     @Override

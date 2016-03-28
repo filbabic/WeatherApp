@@ -56,7 +56,7 @@ public class BrowseLocationsFragment extends Fragment implements LocationItemLis
 
     private void initPresenter() {
         LocationDatabase database = new LocationDatabase(getActivity());
-        presenter = new BrowseLocationsFragmentPresenterImpl(database);
+        presenter = new BrowseLocationsFragmentPresenterImpl(database, null);
     }
 
     private void initAdapter() {

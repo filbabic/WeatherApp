@@ -19,7 +19,7 @@ public class ViewViewHolderPresenterImpl implements ViewHolderPresenter {
     }
 
     @Override
-    public void createValues(WeatherResponse response) {
+    public void createValuesForViewToDisplay(WeatherResponse response) {
         createTemperatureValues(response.getMain());
         createDescriptionValues(response.getWeatherObject());
         createPressureValues(response.getMain());
@@ -103,7 +103,7 @@ public class ViewViewHolderPresenterImpl implements ViewHolderPresenter {
 
     @Override
     public String directionOfWind(double degrees) {
-        if (degrees >= 315 && degrees < 45) return "North";
+        if (degrees >= 315 || degrees < 45) return "North";
         if (degrees >= 45 && degrees < 135) return "East";
         if (degrees >= 135 && degrees < 225) return "South";
         if (degrees >= 225 && degrees < 315) return "West";

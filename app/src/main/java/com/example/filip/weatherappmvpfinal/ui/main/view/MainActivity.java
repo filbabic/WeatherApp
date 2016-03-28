@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
 
     private void initPresenter() {
         LocationDatabase database = new LocationDatabase(this);
-        presenter = new MainActivityPresenterImpl(this, database);
+        presenter = new MainActivityPresenterImpl(this, database, null);
     }
 
     private void initAdapter() {

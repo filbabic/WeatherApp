@@ -8,5 +8,7 @@ import com.example.filip.weatherappmvpfinal.pojo.WeatherResponse;
 public interface WeatherFragmentPresenter {
     void sendRequestToAPI(String city);
 
+    void getLastStoredRequestFromDatabase(String city);
+
     void createWeatherStringsForView(WeatherResponse response);
 }

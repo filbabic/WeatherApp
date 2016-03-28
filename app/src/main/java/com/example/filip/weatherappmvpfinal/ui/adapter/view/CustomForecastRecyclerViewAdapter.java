@@ -65,7 +65,7 @@ public class CustomForecastRecyclerViewAdapter extends RecyclerView.Adapter<Cust
 
         @Override
         public void sendDataToPresenter(WeatherResponse response) {
-            presenter.createValues(response);
+            presenter.createValuesForViewToDisplay(response);
         }
 
         @Override

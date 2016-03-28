@@ -38,4 +38,16 @@ public class WeatherResponse implements Serializable {
     public String getDt_txt() {
         return dt_txt;
     }
+
+    public void setWeatherObject(Weather weatherObject) {
+        this.weather[0] = weatherObject;
+    }
+
+    public void setMain(Main main) {
+        this.main = main;
+    }
+
+    public void setWind(Wind wind) {
+        this.wind = wind;
+    }
 }

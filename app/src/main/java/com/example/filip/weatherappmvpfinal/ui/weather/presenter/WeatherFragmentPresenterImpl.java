@@ -3,6 +3,9 @@ package com.example.filip.weatherappmvpfinal.ui.weather.presenter;
 import android.annotation.SuppressLint;
 
 import com.example.filip.weatherappmvpfinal.helpers.ResponseListener;
+import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
+import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
+import com.example.filip.weatherappmvpfinal.helpers.database.WeatherDatabase;
 import com.example.filip.weatherappmvpfinal.helpers.networking.NetworkingHelper;
 import com.example.filip.weatherappmvpfinal.helpers.networking.NetworkingHelperImpl;
 import com.example.filip.weatherappmvpfinal.pojo.Main;
@@ -17,19 +20,25 @@ import com.example.filip.weatherappmvpfinal.ui.weather.view.WeatherFragmentView;
 public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter {
     private final NetworkingHelper networkingHelper;
     private final WeatherFragmentView weatherFragmentView;
+    private final DatabaseHelper databaseHelper;
 
-    public WeatherFragmentPresenterImpl(WeatherFragmentView weatherFragmentView) {
+    public WeatherFragmentPresenterImpl(WeatherFragmentView weatherFragmentView, WeatherDatabase database) {
         this.networkingHelper = new NetworkingHelperImpl();
         this.weatherFragmentView = weatherFragmentView;
+        this.databaseHelper = new DatabaseHelperImpl(null, database);
     }
 
     @Override
-    public void sendRequestToAPI(String city) {
+    public void sendRequestToAPI(final String city) {
         networkingHelper.requestWeatherFromAPI(city, new ResponseListener<WeatherResponse>() {
             @Override
             public void onSuccess(WeatherResponse callback) {
-                if (callback != null)
+                if (callback != null) {
                     createWeatherStringsForView(callback);
+                    if (databaseHelper.locationIsCached(city))
+                        databaseHelper.updateWeatherResponseInDatabase(callback, city);
+                    else databaseHelper.saveWeatherResponseToDatabase(callback, city);
+                }
             }
 
             @Override
@@ -40,12 +49,19 @@ public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter {
     }
 
     @Override
+    public void getLastStoredRequestFromDatabase(String city) {
+        WeatherResponse response = databaseHelper.getResponseFromDatabase(city);
+        if (response != null)
+            createWeatherStringsForView(response);
+    }
+
+    @Override
     public void createWeatherStringsForView(WeatherResponse response) {
         createTemperatureValues(response.getMain());
         createDescriptionValues(response.getWeatherObject());
         createPressureValues(response.getMain());
-        createWeatherIconValue(response.getWeatherObject().getMain());
         createWindValues(response.getWind());
+        createWeatherIconValue(response.getWeatherObject().getMain());
     }
 
     @SuppressLint("DefaultLocale")
@@ -58,63 +74,56 @@ public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter {
     }
 
     private void createWindValues(Wind wind) {
-        String windValues = "Wind is blowing " + wind.getSpeed() + "m/s" + " " + directionOfWind(wind.getDeg());
+        String windValues = "Wind: " + wind.getSpeed() + "km/h";
         weatherFragmentView.setWindValues(windValues);
     }
 
     private void createPressureValues(Main main) {
-        String pressure = "Air pressure is: " + main.getPressure() + "hpa";
+        String pressure = main.getPressure() + " hpa";
         weatherFragmentView.setPressureValues(pressure);
     }
 
     private void createDescriptionValues(Weather weather) {
-        String description = "Weather status: " + weather.getMain() + ", details: " + weather.getDescription();
+        String description = weather.getDescription();
         weatherFragmentView.setDescriptionValues(description);
     }
 
     private void createWeatherIconValue(String description) {
-        switch (description) {
-            case "Snow": {
-                weatherFragmentView.setWeatherIcon("13d.png");
-                break;
-            }
-            case "Rain": {
-                weatherFragmentView.setWeatherIcon("09d.png");
-                break;
-            }
-            case "Clear": {
-                weatherFragmentView.setWeatherIcon("01d.png");
-                break;
-            }
-            case "Mist": {
-                weatherFragmentView.setWeatherIcon("50d.png");
-                break;
-            }
-            case "Fog": {
-                weatherFragmentView.setWeatherIcon("50d.png");
-                break;
-            }
-            case "Haze": {
-                weatherFragmentView.setWeatherIcon("50d.png");
-                break;
-            }
+        if (description != null)
+            switch (description) {
+                case "Snow": {
+                    weatherFragmentView.setWeatherIcon("13d.png");
+                    break;
+                }
+                case "Rain": {
+                    weatherFragmentView.setWeatherIcon("09d.png");
+                    break;
+                }
+                case "Clear": {
+                    weatherFragmentView.setWeatherIcon("01d.png");
+                    break;
+                }
+                case "Mist": {
+                    weatherFragmentView.setWeatherIcon("50d.png");
+                    break;
+                }
+                case "Fog": {
+                    weatherFragmentView.setWeatherIcon("50d.png");
+                    break;
+                }
+                case "Haze": {
+                    weatherFragmentView.setWeatherIcon("50d.png");
+                    break;
+                }
 
-            case "Clouds": {
-                weatherFragmentView.setWeatherIcon("03d.png");
-                break;
+                case "Clouds": {
+                    weatherFragmentView.setWeatherIcon("03d.png");
+                    break;
+                }
             }
-        }
     }
 
     private double toCelsiusFromKelvin(double temperature) {
         return temperature - 273;
-    }
-
-    private String directionOfWind(double degrees) {
-        if (degrees >= 315 && degrees < 45) return "North";
-        if (degrees >= 45 && degrees < 135) return "East";
-        if (degrees >= 135 && degrees < 225) return "South";
-        if (degrees >= 225 && degrees < 315) return "West";
-        return null;
     }
 }

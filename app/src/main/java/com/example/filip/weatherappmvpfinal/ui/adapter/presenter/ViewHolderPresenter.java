@@ -9,7 +9,7 @@ import com.example.filip.weatherappmvpfinal.pojo.Wind;
  * Created by Filip on 19/02/2016.
  */
 public interface ViewHolderPresenter {
-    void createValues(WeatherResponse response);
+    void createValuesForViewToDisplay(WeatherResponse response);
 
     void createTemperatureValues(Main main);
 

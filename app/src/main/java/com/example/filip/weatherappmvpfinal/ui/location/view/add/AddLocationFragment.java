@@ -61,7 +61,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
 
     private void initPresenter() {
         LocationDatabase database = new LocationDatabase(getActivity());
-        presenter = new AddLocationPresenterImpl(this, database);
+        presenter = new AddLocationPresenterImpl(this, database, null);
     }
 
     @Override
