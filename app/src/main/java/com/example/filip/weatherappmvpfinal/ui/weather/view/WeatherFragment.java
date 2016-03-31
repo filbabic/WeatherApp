@@ -12,11 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.filip.weatherappmvpfinal.R;
 import com.example.filip.weatherappmvpfinal.constants.Constants;
+import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.WeatherDatabase;
+import com.example.filip.weatherappmvpfinal.helpers.networking.NetworkingHelperImpl;
 import com.example.filip.weatherappmvpfinal.ui.weather.presenter.WeatherFragmentPresenter;
 import com.example.filip.weatherappmvpfinal.ui.weather.presenter.WeatherFragmentPresenterImpl;
 
@@ -75,7 +78,7 @@ public class WeatherFragment extends Fragment implements WeatherFragmentView, Vi
 
     private void initPresenter() {
         WeatherDatabase database = new WeatherDatabase(getActivity());
-        presenter = new WeatherFragmentPresenterImpl(this, database);
+        presenter = new WeatherFragmentPresenterImpl(this, new DatabaseHelperImpl(null, database), new NetworkingHelperImpl());
     }
 
     @Override
@@ -102,6 +105,11 @@ public class WeatherFragment extends Fragment implements WeatherFragmentView, Vi
     @Override
     public void setDescriptionValues(String descriptionValues) {
         mDescription.setText(descriptionValues);
+    }
+
+    @Override
+    public void onFailure() {
+        Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.weather_fragment_loading_failure_toast_message), Toast.LENGTH_SHORT).show();
     }
 
     private boolean checkIfNetworkIsAvailable() {

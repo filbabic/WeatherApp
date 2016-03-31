@@ -15,8 +15,8 @@ public class LocationHelperImpl implements LocationHelper {
     private final Geocoder geocoder;
     private final GoogleApiClient googleApiClient;
 
-    public LocationHelperImpl(Geocoder geo, GoogleApiClient client) {
-        this.geocoder = geo;
+    public LocationHelperImpl(Geocoder geocoder, GoogleApiClient client) {
+        this.geocoder = geocoder;
         this.googleApiClient = client;
     }
 
@@ -41,7 +41,7 @@ public class LocationHelperImpl implements LocationHelper {
     }
 
     @Override
-    public Location getLocation() {
+    public Location getCurrentLocation() {
         try {
             Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (location != null) {

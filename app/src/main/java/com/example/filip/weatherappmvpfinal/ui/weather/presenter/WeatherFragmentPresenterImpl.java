@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 
 import com.example.filip.weatherappmvpfinal.helpers.ResponseListener;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
-import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
-import com.example.filip.weatherappmvpfinal.helpers.database.WeatherDatabase;
 import com.example.filip.weatherappmvpfinal.helpers.networking.NetworkingHelper;
 import com.example.filip.weatherappmvpfinal.helpers.networking.NetworkingHelperImpl;
 import com.example.filip.weatherappmvpfinal.pojo.Main;
@@ -22,10 +20,10 @@ public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter {
     private final WeatherFragmentView weatherFragmentView;
     private final DatabaseHelper databaseHelper;
 
-    public WeatherFragmentPresenterImpl(WeatherFragmentView weatherFragmentView, WeatherDatabase database) {
-        this.networkingHelper = new NetworkingHelperImpl();
+    public WeatherFragmentPresenterImpl(WeatherFragmentView weatherFragmentView, DatabaseHelper helper, NetworkingHelper networkingHelper) {
+        this.networkingHelper = networkingHelper;
         this.weatherFragmentView = weatherFragmentView;
-        this.databaseHelper = new DatabaseHelperImpl(null, database);
+        this.databaseHelper = helper;
     }
 
     @Override
@@ -35,7 +33,7 @@ public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter {
             public void onSuccess(WeatherResponse callback) {
                 if (callback != null) {
                     createWeatherStringsForView(callback);
-                    if (databaseHelper.locationIsCached(city))
+                    if (databaseHelper.checkIfLocationIsCached(city))
                         databaseHelper.updateWeatherResponseInDatabase(callback, city);
                     else databaseHelper.saveWeatherResponseToDatabase(callback, city);
                 }
@@ -53,15 +51,24 @@ public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter {
         WeatherResponse response = databaseHelper.getResponseFromDatabase(city);
         if (response != null)
             createWeatherStringsForView(response);
+        else weatherFragmentView.onFailure();
     }
 
     @Override
     public void createWeatherStringsForView(WeatherResponse response) {
-        createTemperatureValues(response.getMain());
-        createDescriptionValues(response.getWeatherObject());
-        createPressureValues(response.getMain());
-        createWindValues(response.getWind());
-        createWeatherIconValue(response.getWeatherObject().getMain());
+        Weather weatherObject = response.getWeatherObject();
+        if (weatherObject != null) {
+            createDescriptionValues(weatherObject);
+            createWeatherIconValue(weatherObject.getMain());
+        }
+        Main main = response.getMain();
+        if (main != null) {
+            createTemperatureValues(response.getMain());
+            createPressureValues(response.getMain());
+        }
+        Wind wind = response.getWind();
+        if (wind != null)
+            createWindValues(response.getWind());
     }
 
     @SuppressLint("DefaultLocale")

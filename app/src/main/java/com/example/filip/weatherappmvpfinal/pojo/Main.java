@@ -1,8 +1,6 @@
 package com.example.filip.weatherappmvpfinal.pojo;
 
-import java.io.Serializable;
-
-public class Main implements Serializable{
+public class Main {
     private double temp;
     private double temp_min;
     private double temp_max;
@@ -15,14 +13,6 @@ public class Main implements Serializable{
         this.temp_max = temp_max;
         this.humidity = humidity;
         this.pressure = pressure;
-    }
-
-    public Main() {
-        this.temp = 0;
-        this.temp_min = 0;
-        this.temp_max = 0;
-        this.pressure = 0;
-        this.humidity = 0;
     }
 
     public double getTemp() {

@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 
 import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
-import com.example.filip.weatherappmvpfinal.ui.weather.view.ForecastFragment;
 import com.example.filip.weatherappmvpfinal.ui.weather.view.WeatherFragment;
 
 import java.util.ArrayList;

@@ -13,4 +13,6 @@ public interface WeatherFragmentView {
     void setWeatherIcon(String iconPath);
 
     void setDescriptionValues(String descriptionValues);
+
+    void onFailure();
 }

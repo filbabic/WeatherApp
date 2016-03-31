@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
 import com.example.filip.weatherappmvpfinal.helpers.location.LocationHelper;
 import com.example.filip.weatherappmvpfinal.helpers.location.LocationHelperImpl;
@@ -28,6 +29,8 @@ import com.example.filip.weatherappmvpfinal.ui.location.view.browse.BrowseLocati
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 
@@ -102,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
 
     private void initPresenter() {
         LocationDatabase database = new LocationDatabase(this);
-        presenter = new MainActivityPresenterImpl(this, database, null);
+        presenter = new MainActivityPresenterImpl(this, new DatabaseHelperImpl(database, null));
     }
 
     private void initAdapter() {
@@ -123,10 +126,9 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Location location = helper.getLocation();
+        Location location = helper.getCurrentLocation();
         if (location != null) {
-            String locationName = helper.getLocationFromGeocoder(location.getLatitude(), location.getLongitude());
-            presenter.receiveDataFromLocationService(locationName);
+            addCurrentLocationToDatabase(helper.getLocationFromGeocoder(location.getLatitude(), location.getLongitude()));
         }
     }
 
@@ -135,13 +137,23 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
     }
 
     @Override
-    public void currentLocationOnSuccess(String locationName) {
+    public void onSuccess(String locationName) {
         Toast.makeText(MainActivity.this, getString(R.string.added_current_location_toast_message) + locationName, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFailure() {
+        Toast.makeText(MainActivity.this, getString(R.string.current_location_cannot_be_added_error_toast_message), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void updateAdapterData() {
         adapter.setAdapterData(presenter.getLocations());
+    }
+
+    @Override
+    public void addCurrentLocationToDatabase(String location) {
+        presenter.receiveDataFromLocationService(location);
     }
 
     private void handleItemSelectedClick(int itemID) {

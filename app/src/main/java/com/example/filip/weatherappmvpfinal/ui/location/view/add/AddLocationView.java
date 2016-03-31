@@ -5,5 +5,7 @@ package com.example.filip.weatherappmvpfinal.ui.location.view.add;
 public interface AddLocationView {
     void onSuccess();
 
-    void onFailure();
+    void onLocationAlreadyExistsError();
+
+    void onEmptyStringRequestError();
 }

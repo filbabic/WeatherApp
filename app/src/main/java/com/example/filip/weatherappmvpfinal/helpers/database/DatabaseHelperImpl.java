@@ -18,8 +18,8 @@ public class DatabaseHelperImpl implements DatabaseHelper {
     }
 
     @Override
-    public void addLocation(LocationWrapper locationWrapper) {
-        locationDatabase.addLocation(locationWrapper);
+    public void addLocation(String locationName) {
+        locationDatabase.addLocation(locationName);
     }
 
     @Override
@@ -33,19 +33,19 @@ public class DatabaseHelperImpl implements DatabaseHelper {
     }
 
     @Override
-    public boolean locationIsCached(String city) {
-        return weatherDatabase.locationExistsInDatabase(city);
+    public boolean checkIfLocationIsCached(String city) {
+        return weatherDatabase.checkIfLocationIsCachedInDatabase(city);
     }
 
     @Override
-    public void deleteLocation(LocationWrapper locationWrapper) {
-        locationDatabase.deleteLocation(locationWrapper);
-        weatherDatabase.deleteAResponseFromDatabase(locationWrapper.getLocation());
+    public void deleteLocation(String locationName) {
+        locationDatabase.deleteLocation(locationName);
+        weatherDatabase.deleteAResponseFromDatabase(locationName);
     }
 
     @Override
-    public boolean checkIfLocationExists(LocationWrapper locationWrapper) {
-        return locationDatabase.checkIfLocationAlreadyExists(locationWrapper);
+    public boolean checkIfLocationExists(String locationName) {
+        return locationDatabase.checkIfLocationAlreadyExistsInDatabase(locationName);
     }
 
     @Override

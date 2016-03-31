@@ -17,4 +17,7 @@
     <string name="main_activity_title">WeatherApp</string>
     <string name="add_location_activity_title">Add a new location!</string>
     <string name="recent_locations_toolbar_title">Recently added locations!</string>
+    <string name="weather_fragment_loading_failure_toast_message">Couldn\'t load weather data, please refresh.</string>
+    <string name="current_location_cannot_be_added_error_toast_message">Current location has already been added, or the location service is offline!</string>
+    <string name="empty_location_string_error_toast_message">Location name cannot be an empty string!</string>
 </resources>

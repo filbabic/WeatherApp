@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Created by Filip on 24/03/2016.
  */
 public interface BrowseLocationsFragmentPresenter {
-    void deleteLocationFromDatabase(LocationWrapper wrapper);
+    void deleteLocationFromDatabase(String locationName);
 
     ArrayList<LocationWrapper> getLocationsFromDatabase();
 }

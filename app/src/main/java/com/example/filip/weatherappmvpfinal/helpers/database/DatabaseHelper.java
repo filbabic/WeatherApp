@@ -9,19 +9,19 @@ import java.util.ArrayList;
  * Created by Filip on 24/03/2016.
  */
 public interface DatabaseHelper {
-    void addLocation(LocationWrapper locationWrapper);
+    void addLocation(String locationName);
 
-    void saveWeatherResponseToDatabase(WeatherResponse response, String city);
+    void saveWeatherResponseToDatabase(WeatherResponse response, String city); //
 
-    void updateWeatherResponseInDatabase(WeatherResponse response, String city);
+    void updateWeatherResponseInDatabase(WeatherResponse response, String city); //
 
-    boolean locationIsCached(String city);
+    boolean checkIfLocationIsCached(String city);//
 
-    void deleteLocation(LocationWrapper locationWrapper);
+    void deleteLocation(String locationName); //
 
-    boolean checkIfLocationExists(LocationWrapper locationWrapper);
+    boolean checkIfLocationExists(String locationName);
 
-    ArrayList<LocationWrapper> getLocations();
+    ArrayList<LocationWrapper> getLocations(); //
 
-    WeatherResponse getResponseFromDatabase(String city);
+    WeatherResponse getResponseFromDatabase(String city); //
 }

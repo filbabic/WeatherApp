@@ -1,9 +1,6 @@
 package com.example.filip.weatherappmvpfinal.ui.main.presenter;
 
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
-import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
-import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
-import com.example.filip.weatherappmvpfinal.helpers.database.WeatherDatabase;
 import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
 import com.example.filip.weatherappmvpfinal.ui.main.view.MainView;
 
@@ -17,19 +14,20 @@ public class MainActivityPresenterImpl implements MainActivityPresenter {
     private final MainView mainView;
     private final DatabaseHelper databaseHelper;
 
-    public MainActivityPresenterImpl(MainView mainView, LocationDatabase locationDatabase, WeatherDatabase weatherDatabase) {
+    public MainActivityPresenterImpl(MainView mainView, DatabaseHelper databaseHelper) {
         this.mainView = mainView;
-        this.databaseHelper = new DatabaseHelperImpl(locationDatabase, weatherDatabase);
+        this.databaseHelper = databaseHelper;
     }
 
     @Override
     public void receiveDataFromLocationService(String locationName) {
-        LocationWrapper locationToAdd = new LocationWrapper(locationName);
-        if (!databaseHelper.checkIfLocationExists(locationToAdd)) {
-            databaseHelper.addLocation(locationToAdd);
-            mainView.currentLocationOnSuccess(locationName);
+        if (!databaseHelper.checkIfLocationExists(locationName)) {
+            databaseHelper.addLocation(locationName);
+            mainView.onSuccess(locationName);
             mainView.updateAdapterData();
-        }
+        } else
+            mainView.onFailure();
+
     }
 
     @Override

@@ -14,7 +14,9 @@ import android.view.ViewGroup;
 
 import com.example.filip.weatherappmvpfinal.R;
 import com.example.filip.weatherappmvpfinal.constants.Constants;
+import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
+import com.example.filip.weatherappmvpfinal.helpers.database.WeatherDatabase;
 import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
 import com.example.filip.weatherappmvpfinal.ui.adapter.view.CustomLocationsListRecyclerViewAdapter;
 import com.example.filip.weatherappmvpfinal.ui.forecast.ForecastDisplayActivity;
@@ -55,8 +57,9 @@ public class BrowseLocationsFragment extends Fragment implements LocationItemLis
     }
 
     private void initPresenter() {
-        LocationDatabase database = new LocationDatabase(getActivity());
-        presenter = new BrowseLocationsFragmentPresenterImpl(database, null);
+        LocationDatabase locationDatabase = new LocationDatabase(getActivity());
+        WeatherDatabase weatherDatabase = new WeatherDatabase(getActivity());
+        presenter = new BrowseLocationsFragmentPresenterImpl(new DatabaseHelperImpl(locationDatabase, weatherDatabase));
     }
 
     private void initAdapter() {
@@ -65,13 +68,13 @@ public class BrowseLocationsFragment extends Fragment implements LocationItemLis
         mRecyclerView.setAdapter(adapter);
     }
 
-    private void openDeleteDialog(final LocationWrapper locationWrapper) {
+    private void openDeleteDialog(final String locationName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(getActivity().getString(R.string.dialog_message) + locationWrapper.getLocation());
+        builder.setMessage(getActivity().getString(R.string.dialog_message) + locationName);
         builder.setPositiveButton(getActivity().getString(R.string.dialog_positive_button), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                presenter.deleteLocationFromDatabase(locationWrapper);
+                presenter.deleteLocationFromDatabase(locationName);
                 adapter.fillData(presenter.getLocationsFromDatabase());
             }
         });
@@ -87,7 +90,7 @@ public class BrowseLocationsFragment extends Fragment implements LocationItemLis
 
     @Override
     public void onLongClick(LocationWrapper locationWrapper) {
-        openDeleteDialog(locationWrapper);
+        openDeleteDialog(locationWrapper.getLocation());
     }
 
     @Override

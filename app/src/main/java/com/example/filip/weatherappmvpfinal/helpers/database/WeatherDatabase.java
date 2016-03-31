@@ -17,7 +17,7 @@ import com.example.filip.weatherappmvpfinal.pojo.Wind;
 public class WeatherDatabase extends SQLiteOpenHelper {
     private final static String TABLE_WEATHER = "weather";
     private final static String COLUMN_ID = "id";
-    private final static String COLUMN_CITY = "city"; //key by which we look up the last requested stats for a certain location
+    private final static String COLUMN_CITY = "city";
     private final static String COLUMN_DESCRIPTION = "description";
     private final static String COLUMN_MAIN_TEMPERATURE = "temp";
     private final static String COLUMN_MAIN_MIN_TEMPERATURE = "temp_min";
@@ -83,17 +83,19 @@ public class WeatherDatabase extends SQLiteOpenHelper {
     }
 
     private ContentValues createValues(WeatherResponse response, String city) {
-        if (response != null) {
-            ContentValues values = new ContentValues();
+        ContentValues values = new ContentValues();
+        Weather weather = response.getWeatherObject();
+        Main main = response.getMain();
+        Wind wind = response.getWind();
+        if (weather != null && wind != null && main != null) {
             values.put(COLUMN_CITY, city);
-            values.put(COLUMN_DESCRIPTION, response.getWeatherObject().getDescription());
-            values.put(COLUMN_MAIN_TEMPERATURE, response.getMain().getTemp());
-            values.put(COLUMN_MAIN_MIN_TEMPERATURE, response.getMain().getTemp_min());
-            values.put(COLUMN_MAIN_MAX_TEMPERATURE, response.getMain().getTemp_max());
-            values.put(COLUMN_MAIN_HUMIDITY, response.getMain().getHumidity());
-            values.put(COLUMN_MAIN_PRESSURE, response.getMain().getPressure());
-            values.put(COLUMN_WIND_SPEED, response.getWind().getSpeed());
-
+            values.put(COLUMN_DESCRIPTION, weather.getDescription());
+            values.put(COLUMN_MAIN_TEMPERATURE, main.getTemp());
+            values.put(COLUMN_MAIN_MIN_TEMPERATURE, main.getTemp_min());
+            values.put(COLUMN_MAIN_MAX_TEMPERATURE, main.getTemp_max());
+            values.put(COLUMN_MAIN_HUMIDITY, main.getHumidity());
+            values.put(COLUMN_MAIN_PRESSURE, main.getPressure());
+            values.put(COLUMN_WIND_SPEED, wind.getSpeed());
             return values;
         }
         return null;
@@ -118,7 +120,7 @@ public class WeatherDatabase extends SQLiteOpenHelper {
         return response;
     }
 
-    public boolean locationExistsInDatabase(String city) {
+    public boolean checkIfLocationIsCachedInDatabase(String city) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_WEATHER, COLUMNS, null, null, null, null, null, null);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {

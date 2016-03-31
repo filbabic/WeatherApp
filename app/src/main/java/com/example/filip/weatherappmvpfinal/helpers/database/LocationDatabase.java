@@ -56,23 +56,23 @@ public class LocationDatabase extends SQLiteOpenHelper {
         return locationWrappers;
     }
 
-    public void addLocation(@NonNull LocationWrapper locationWrapper) {
+    public void addLocation(@NonNull String locationName) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_CITY, locationWrapper.getLocation());
+        contentValues.put(COLUMN_CITY, locationName);
         SQLiteDatabase database = this.getWritableDatabase();
         database.insert(TABLE_LOCATIONS, null, contentValues);
         database.close();
     }
 
-    public boolean checkIfLocationAlreadyExists(LocationWrapper locationWrapper) {
+    public boolean checkIfLocationAlreadyExistsInDatabase(String locationName) {
         for (LocationWrapper x : this.getLocations()) {
-            if (x.getLocation().equalsIgnoreCase(locationWrapper.getLocation())) return true;
+            if (x.getLocation().equalsIgnoreCase(locationName)) return true;
         }
         return false;
     }
 
-    public void deleteLocation(LocationWrapper locationWrapper) {
-        String[] arg = new String[]{locationWrapper.getLocation()};
+    public void deleteLocation(String locationName) {
+        String[] arg = new String[]{locationName};
 
         SQLiteDatabase db = this.getWritableDatabase();
 

@@ -1,10 +1,6 @@
 package com.example.filip.weatherappmvpfinal.ui.location.presenter.add;
 
-import com.example.filip.weatherappmvpfinal.helpers.database.WeatherDatabase;
-import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
-import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
-import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
 import com.example.filip.weatherappmvpfinal.ui.location.view.add.AddLocationView;
 
 /**
@@ -14,17 +10,20 @@ public class AddLocationPresenterImpl implements AddLocationFragmentPresenter {
     private final AddLocationView addLocationView;
     private final DatabaseHelper databaseHelper;
 
-    public AddLocationPresenterImpl(AddLocationView view, LocationDatabase locationDatabase, WeatherDatabase weatherDatabase) {
+    public AddLocationPresenterImpl(AddLocationView view, DatabaseHelper databaseHelper) {
         this.addLocationView = view;
-        this.databaseHelper = new DatabaseHelperImpl(locationDatabase, weatherDatabase);
+        this.databaseHelper = databaseHelper;
     }
 
     @Override
-    public void addLocationToDatabase(LocationWrapper locationWrapper) {
-        if (!databaseHelper.checkIfLocationExists(locationWrapper)) {
-            databaseHelper.addLocation(locationWrapper);
-            addLocationView.onSuccess();
+    public void addLocationToDatabase(String cityName) {
+        if (!cityName.equals("")) {
+            if (!databaseHelper.checkIfLocationExists(cityName)) {
+                databaseHelper.addLocation(cityName);
+                addLocationView.onSuccess();
+            } else
+                addLocationView.onLocationAlreadyExistsError();
         } else
-            addLocationView.onFailure();
+            addLocationView.onEmptyStringRequestError();
     }
 }

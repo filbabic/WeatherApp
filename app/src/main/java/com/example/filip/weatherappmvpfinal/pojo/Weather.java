@@ -1,19 +1,12 @@
 package com.example.filip.weatherappmvpfinal.pojo;
 
-import java.io.Serializable;
-
-public class Weather implements Serializable {
+public class Weather {
     private String main;
     private String description;
 
     public Weather(String main, String description) {
         this.main = main;
         this.description = description;
-    }
-
-    public Weather() {
-        this.main = "N/A";
-        this.description = "N/A";
     }
 
     public String getMain() {

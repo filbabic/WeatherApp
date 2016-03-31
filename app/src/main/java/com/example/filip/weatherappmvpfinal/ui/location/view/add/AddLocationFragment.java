@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
+import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
 import com.example.filip.weatherappmvpfinal.ui.location.presenter.add.AddLocationFragmentPresenter;
 import com.example.filip.weatherappmvpfinal.ui.location.presenter.add.AddLocationPresenterImpl;
@@ -49,8 +49,13 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onFailure() {
+    public void onLocationAlreadyExistsError() {
         Toast.makeText(getActivity().getApplicationContext(), R.string.location_already_exists_toast_message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onEmptyStringRequestError() {
+        Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.empty_location_string_error_toast_message), Toast.LENGTH_SHORT).show();
     }
 
     private void initUI(View view) {
@@ -61,11 +66,13 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
 
     private void initPresenter() {
         LocationDatabase database = new LocationDatabase(getActivity());
-        presenter = new AddLocationPresenterImpl(this, database, null);
+        presenter = new AddLocationPresenterImpl(this, new DatabaseHelperImpl(database, null));
     }
 
     @Override
     public void onClick(View v) {
-        presenter.addLocationToDatabase(new LocationWrapper(mEnterLocationNameEditText.getText().toString()));
+        if (v == mAddLocationButton) {
+            presenter.addLocationToDatabase(mEnterLocationNameEditText.getText().toString());
+        }
     }
 }

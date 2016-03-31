@@ -1,10 +1,6 @@
 package com.example.filip.weatherappmvpfinal.pojo;
 
-import java.io.Serializable;
-
-
-@SuppressWarnings("serial")
-public class WeatherResponse implements Serializable {
+public class WeatherResponse {
     private Weather[] weather = new Weather[1];
     private Main main;
     private Wind wind;
@@ -18,9 +14,6 @@ public class WeatherResponse implements Serializable {
     }
 
     public WeatherResponse() {
-        this.weather = new Weather[]{new Weather()};
-        this.main = new Main();
-        this.wind = new Wind();
     }
 
     public Main getMain() {

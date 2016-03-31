@@ -10,7 +10,7 @@ public interface LocationHelper {
 
     void disconnectClient();
 
-    Location getLocation();
+    Location getCurrentLocation();
 
     String getLocationFromGeocoder(double latitude, double longitude);
 }
