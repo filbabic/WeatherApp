@@ -49,7 +49,7 @@ public class CustomLocationsListRecyclerViewAdapter extends RecyclerView.Adapter
     }
 
     protected class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
-        private TextView mLocationName;
+        private final TextView mLocationName;
 
         public ViewHolder(View itemView) {
             super(itemView);

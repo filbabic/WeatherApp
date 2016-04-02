@@ -1,5 +1,7 @@
 package com.example.filip.weatherappmvpfinal;
 
+import com.example.filip.weatherappmvpfinal.constants.Constants;
+import com.example.filip.weatherappmvpfinal.helpers.database.DataManager;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
@@ -27,6 +29,8 @@ public class DatabaseHelperTest {
     private LocationDatabase locationDatabase;
     @Mock
     private WeatherDatabase weatherDatabase;
+    @Mock
+    private DataManager dataManager;
 
     private DatabaseHelper databaseHelper;
     @Mock
@@ -38,8 +42,15 @@ public class DatabaseHelperTest {
 
     @Before
     public void setUp() throws Exception {
-        databaseHelper = new DatabaseHelperImpl(locationDatabase, weatherDatabase);
+        databaseHelper = new DatabaseHelperImpl(locationDatabase, weatherDatabase, dataManager);
         locationWrappers = new ArrayList<>();
+    }
+
+    @Test
+    public void shouldCallAddLocationToDatabase() throws Exception {
+        databaseHelper.addLocation(cityMock);
+
+        verify(locationDatabase).addLocation(cityMock);
     }
 
     @Test
@@ -51,93 +62,59 @@ public class DatabaseHelperTest {
     }
 
     @Test
-    public void shouldCallGetLocationsMethodInDatabase() throws Exception {
-        databaseHelper.getLocations();
+    public void shouldVerifyIfLocationExistsInLocationDatabase() throws Exception {
+        when(dataManager.checkIfAlreadyExists(anyString(), anyListOf(LocationWrapper.class))).thenReturn(false);
+        when(locationDatabase.getLocations()).thenReturn(locationWrappers);
 
-        verify(locationDatabase).getLocations();
+        assertEquals(databaseHelper.alreadyExists(cityMock, Constants.LOCATIONS_DATABASE), false);
+        assertEquals(databaseHelper.getLocations(Constants.LOCATIONS_DATABASE), locationWrappers);
+        verify(locationDatabase, times(2)).getLocations();
+        verify(dataManager).checkIfAlreadyExists(cityMock, locationWrappers);
+    }
+
+    @Test
+    public void shouldVerifyIfLocationExistsInWeatherDatabase() throws Exception {
+        when(dataManager.checkIfAlreadyExists(anyString(), anyListOf(LocationWrapper.class))).thenReturn(false);
+        when(weatherDatabase.getLocations()).thenReturn(locationWrappers);
+
+        assertEquals(databaseHelper.alreadyExists(cityMock, Constants.WEATHER_DATABASE), false);
+        assertEquals(databaseHelper.getLocations(Constants.WEATHER_DATABASE), locationWrappers);
+        verify(weatherDatabase, times(2)).getLocations();
+        verify(dataManager, times(1)).checkIfAlreadyExists(cityMock, locationWrappers);
     }
 
     @Test
     public void shouldCallSaveResponseToDatabase() throws Exception {
-        databaseHelper.saveWeatherResponseToDatabase(weatherResponse, cityMock);
+        databaseHelper.saveWeatherResponseToDatabase(weatherResponse);
 
-        verify(weatherDatabase).addWeatherResponseToDatabase(weatherResponse, cityMock);
+        verify(weatherDatabase).addWeatherResponseToDatabase(weatherResponse);
     }
 
     @Test
     public void shouldCallUpdateResponseToDatabase() throws Exception {
-        databaseHelper.updateWeatherResponseInDatabase(weatherResponse, cityMock);
+        databaseHelper.updateWeatherResponseInDatabase(weatherResponse);
 
-        verify(weatherDatabase).updateWeatherResponseInDatabase(weatherResponse, cityMock);
-    }
-
-    @Test
-    public void shouldCallCheckIfLocationAlreadyExists() throws Exception {
-        databaseHelper.checkIfLocationExists(cityMock);
-
-        verify(locationDatabase).checkIfLocationAlreadyExistsInDatabase(cityMock);
-    }
-
-    @Test
-    public void shouldCallCheckIfLocationIsCached() throws Exception {
-        databaseHelper.checkIfLocationIsCached(cityMock);
-
-        verify(weatherDatabase).checkIfLocationIsCachedInDatabase(cityMock);
+        verify(weatherDatabase).updateWeatherResponseInDatabase(weatherResponse);
     }
 
     @Test
     public void shouldCallGetResponseFromDatabase() throws Exception {
-        databaseHelper.getResponseFromDatabase(cityMock);
+        databaseHelper.getCachedResponseFromWeatherDatabase(cityMock);
 
         verify(weatherDatabase).getWeatherResponseForCertainCity(cityMock);
     }
 
     @Test
-    public void shouldCallAddLocationToDatabase() throws Exception {
-        databaseHelper.addLocation(cityMock);
+    public void shouldCallGetLocationsMethodInDatabase() throws Exception {
+        databaseHelper.getLocations(Constants.LOCATIONS_DATABASE);
 
-        verify(locationDatabase).addLocation(cityMock);
-    }
-
-    @Test
-    public void shouldReturnFalseWhenCallingResponseIsCachedInDatabaseMethod() throws Exception {
-        when(weatherDatabase.checkIfLocationIsCachedInDatabase(cityMock)).thenReturn(false);
-        assertEquals(databaseHelper.checkIfLocationIsCached(cityMock), false);
-        verify(weatherDatabase).checkIfLocationIsCachedInDatabase(cityMock);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenCallingResponseIsCachedInDatabaseMethod() throws Exception {
-        when(weatherDatabase.checkIfLocationIsCachedInDatabase(cityMock)).thenReturn(true);
-        assertEquals(databaseHelper.checkIfLocationIsCached(cityMock), true);
-        verify(weatherDatabase).checkIfLocationIsCachedInDatabase(cityMock);
-    }
-
-    @Test
-    public void shouldReturnFalseWhenCallingLocationExistsInDatabase() throws Exception {
-        when(locationDatabase.checkIfLocationAlreadyExistsInDatabase(cityMock)).thenReturn(false);
-        assertEquals(databaseHelper.checkIfLocationExists(cityMock), false);
-        verify(locationDatabase).checkIfLocationAlreadyExistsInDatabase(cityMock);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenCallingLocationExistsInDatabase() throws Exception {
-        when(locationDatabase.checkIfLocationAlreadyExistsInDatabase(cityMock)).thenReturn(true);
-        assertEquals(databaseHelper.checkIfLocationExists(cityMock), true);
-        verify(locationDatabase).checkIfLocationAlreadyExistsInDatabase(cityMock);
-    }
-
-    @Test
-    public void shouldReturnMockedLocationWrappers() throws Exception {
-        when(locationDatabase.getLocations()).thenReturn(locationWrappers);
-        assertEquals(databaseHelper.getLocations(), locationWrappers);
         verify(locationDatabase).getLocations();
     }
 
     @Test
     public void shouldReturnMockedWeatherResponse() throws Exception {
-        when(weatherDatabase.getWeatherResponseForCertainCity(cityMock)).thenReturn(weatherResponse);
-        assertEquals(databaseHelper.getResponseFromDatabase(cityMock), weatherResponse);
+        when(weatherDatabase.getWeatherResponseForCertainCity(anyString())).thenReturn(weatherResponse);
+        assertEquals(databaseHelper.getCachedResponseFromWeatherDatabase(cityMock), weatherResponse);
         verify(weatherDatabase).getWeatherResponseForCertainCity(cityMock);
     }
 }

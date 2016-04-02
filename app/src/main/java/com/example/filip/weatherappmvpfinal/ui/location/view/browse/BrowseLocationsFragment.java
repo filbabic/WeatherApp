@@ -14,12 +14,13 @@ import android.view.ViewGroup;
 
 import com.example.filip.weatherappmvpfinal.R;
 import com.example.filip.weatherappmvpfinal.constants.Constants;
+import com.example.filip.weatherappmvpfinal.helpers.database.DataManagerImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
 import com.example.filip.weatherappmvpfinal.helpers.database.WeatherDatabase;
 import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
 import com.example.filip.weatherappmvpfinal.ui.adapter.view.CustomLocationsListRecyclerViewAdapter;
-import com.example.filip.weatherappmvpfinal.ui.forecast.ForecastDisplayActivity;
+import com.example.filip.weatherappmvpfinal.ui.forecast.view.ForecastDisplayActivity;
 import com.example.filip.weatherappmvpfinal.ui.location.presenter.browse.BrowseLocationsFragmentPresenter;
 import com.example.filip.weatherappmvpfinal.ui.location.presenter.browse.BrowseLocationsFragmentPresenterImpl;
 
@@ -59,7 +60,7 @@ public class BrowseLocationsFragment extends Fragment implements LocationItemLis
     private void initPresenter() {
         LocationDatabase locationDatabase = new LocationDatabase(getActivity());
         WeatherDatabase weatherDatabase = new WeatherDatabase(getActivity());
-        presenter = new BrowseLocationsFragmentPresenterImpl(new DatabaseHelperImpl(locationDatabase, weatherDatabase));
+        presenter = new BrowseLocationsFragmentPresenterImpl(new DatabaseHelperImpl(locationDatabase, weatherDatabase, new DataManagerImpl()));
     }
 
     private void initAdapter() {
@@ -70,7 +71,7 @@ public class BrowseLocationsFragment extends Fragment implements LocationItemLis
 
     private void openDeleteDialog(final String locationName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(getActivity().getString(R.string.dialog_message) + locationName);
+        builder.setMessage(getActivity().getString(R.string.dialog_message, locationName));
         builder.setPositiveButton(getActivity().getString(R.string.dialog_positive_button), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

@@ -1,5 +1,6 @@
 package com.example.filip.weatherappmvpfinal.ui.main.presenter;
 
+import com.example.filip.weatherappmvpfinal.constants.Constants;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
 import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
 import com.example.filip.weatherappmvpfinal.ui.main.view.MainView;
@@ -21,17 +22,16 @@ public class MainActivityPresenterImpl implements MainActivityPresenter {
 
     @Override
     public void receiveDataFromLocationService(String locationName) {
-        if (!databaseHelper.checkIfLocationExists(locationName)) {
+        if (!databaseHelper.alreadyExists(locationName, Constants.LOCATIONS_DATABASE)) {
             databaseHelper.addLocation(locationName);
             mainView.onSuccess(locationName);
             mainView.updateAdapterData();
         } else
             mainView.onFailure();
-
     }
 
     @Override
     public ArrayList<LocationWrapper> getLocations() {
-        return databaseHelper.getLocations();
+        return databaseHelper.getLocations(Constants.LOCATIONS_DATABASE);
     }
 }

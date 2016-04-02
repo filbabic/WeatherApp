@@ -10,11 +10,13 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
 
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
@@ -31,8 +33,6 @@ public class LocationHelperTest {
     private GoogleApiClient googleApiClient;
 
     private LocationHelper locationHelper;
-
-    private final String locationMock = "locationMock";
 
     @Mock
     private List<Address> mockedList;
@@ -59,14 +59,16 @@ public class LocationHelperTest {
 
     @Test
     public void shouldReturnMockedLocationAddressLine() throws Exception {
+        String locationMock = "locationMock";
         when(geocoder.getFromLocation(anyDouble(), anyDouble(), anyInt())).thenReturn(mockedList);
         when(mockedList.get(anyInt())).thenReturn(mockedAddress);
         when(mockedAddress.getLocality()).thenReturn((locationMock));
 
         assertEquals(locationHelper.getLocationFromGeocoder(0, 0), locationMock);
+        InOrder inOrder = inOrder(geocoder, mockedList, mockedAddress);
 
-        verify(geocoder).getFromLocation(anyDouble(), anyDouble(), anyInt());
-        verify(mockedList).get(anyInt());
-        verify(mockedAddress).getLocality();
+        inOrder.verify(geocoder).getFromLocation(anyDouble(), anyDouble(), anyInt());
+        inOrder.verify(mockedList).get(anyInt());
+        inOrder.verify(mockedAddress).getLocality();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.filip.weatherappmvpfinal;
 
+import com.example.filip.weatherappmvpfinal.constants.Constants;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
 import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
 import com.example.filip.weatherappmvpfinal.ui.location.presenter.browse.BrowseLocationsFragmentPresenter;
@@ -13,6 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,12 +30,12 @@ public class BrowseLocationsPresenterTest {
     @Mock
     private DatabaseHelper databaseHelper;
 
+    @Mock
     private ArrayList<LocationWrapper> locationWrappers;
 
     @Before
     public void setUp() throws Exception {
         presenter = new BrowseLocationsFragmentPresenterImpl(databaseHelper);
-        locationWrappers = new ArrayList<>();
     }
 
     @Test
@@ -46,9 +48,9 @@ public class BrowseLocationsPresenterTest {
 
     @Test
     public void shouldReturnMockedLocationWrappers() throws Exception {
-        when(databaseHelper.getLocations()).thenReturn(locationWrappers);
-        assertEquals(presenter.getLocationsFromDatabase(), locationWrappers);
+        when(databaseHelper.getLocations(anyString())).thenReturn(locationWrappers);
 
-        verify(databaseHelper).getLocations();
+        assertEquals(presenter.getLocationsFromDatabase(), locationWrappers);
+        verify(databaseHelper).getLocations(Constants.LOCATIONS_DATABASE);
     }
 }

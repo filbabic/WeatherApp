@@ -1,9 +1,10 @@
-package com.example.filip.weatherappmvpfinal.ui.weather.view;
+package com.example.filip.weatherappmvpfinal.ui.forecast.view;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,22 +12,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.filip.weatherappmvpfinal.App;
 import com.example.filip.weatherappmvpfinal.R;
 import com.example.filip.weatherappmvpfinal.constants.Constants;
 import com.example.filip.weatherappmvpfinal.ui.adapter.view.CustomForecastRecyclerViewAdapter;
 import com.example.filip.weatherappmvpfinal.pojo.WeatherResponse;
-import com.example.filip.weatherappmvpfinal.ui.weather.presenter.ForecastFragmentFragmentPresenterImpl;
-import com.example.filip.weatherappmvpfinal.ui.weather.presenter.ForecastFragmentPresenter;
+import com.example.filip.weatherappmvpfinal.ui.forecast.presenter.ForecastFragmentFragmentPresenterImpl;
+import com.example.filip.weatherappmvpfinal.ui.forecast.presenter.ForecastFragmentPresenter;
+import com.example.filip.weatherappmvpfinal.utils.NetworkUtils;
 
 import java.util.ArrayList;
 
 /**
  * Created by Filip on 16/02/2016.
  */
-public class ForecastFragment extends Fragment implements ForecastFragmentView {
+public class ForecastFragment extends Fragment implements ForecastFragmentView, View.OnClickListener {
     private RecyclerView mRecyclerView;
     private CustomForecastRecyclerViewAdapter adapter;
     private ForecastFragmentPresenter presenter;
+    private FloatingActionButton mFloatingActionButton;
 
     public static ForecastFragment newInstance(String city) {
         Bundle data = new Bundle();
@@ -53,34 +57,44 @@ public class ForecastFragment extends Fragment implements ForecastFragmentView {
         super.onStart();
         initPresenter();
         initAdapter();
-        presenter.sendARequestToAPI(getArguments().getString(Constants.CITY_BUNDLE_KEY));
+        getForecastData();
     }
 
     private void initUI(View view) {
+        mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.forecast_fragment_floating_action_button);
+        mFloatingActionButton.setOnClickListener(this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.forecast_fragment_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
     private void initPresenter() {
-        presenter = new ForecastFragmentFragmentPresenterImpl(this);
+        presenter = new ForecastFragmentFragmentPresenterImpl(this, App.getInstance().getNetworkingHelper());
     }
 
     private void initAdapter() {
         adapter = new CustomForecastRecyclerViewAdapter();
     }
 
+    private void getForecastData() {
+        if (NetworkUtils.checkIfInternetConnectionIsAvailable(getActivity()))
+            presenter.sendARequestToAPI(getArguments().getString(Constants.CITY_BUNDLE_KEY));
+    }
+
     @Override
-    public void onSuccess(ArrayList<WeatherResponse> response) {
-        if (response != null) {
-            adapter.fillData(response);
-            mRecyclerView.setAdapter(adapter);
-        }
+    public void onSuccess(@NonNull ArrayList<WeatherResponse> response) {
+        adapter.fillData(response);
+        mRecyclerView.setAdapter(adapter);
     }
 
     @Override
     public void onFailure() {
         Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.request_failed_toast_message), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == mFloatingActionButton)
+            getForecastData();
     }
 }

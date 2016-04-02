@@ -1,7 +1,6 @@
 package com.example.filip.weatherappmvpfinal.ui.adapter.presenter;
 
-import android.annotation.SuppressLint;
-
+import com.example.filip.weatherappmvpfinal.constants.Constants;
 import com.example.filip.weatherappmvpfinal.pojo.Main;
 import com.example.filip.weatherappmvpfinal.pojo.Weather;
 import com.example.filip.weatherappmvpfinal.pojo.WeatherResponse;
@@ -20,80 +19,93 @@ public class ViewViewHolderPresenterImpl implements ViewHolderPresenter {
 
     @Override
     public void createValuesForViewToDisplay(WeatherResponse response) {
-        createTemperatureValues(response.getMain());
-        createDescriptionValues(response.getWeatherObject());
-        createPressureValues(response.getMain());
+        Main main = response.getMain();
+        if (main != null) {
+            createTemperatureValues(response.getMain());
+            createPressureValues(response.getMain());
+            createHumidityValues(response.getMain());
+        }
+        Wind wind = response.getWind();
+        if (wind != null) {
+            createWindValues(response.getWind());
+        }
+        Weather weather = response.getWeatherObject();
+        if (weather != null) {
+            createDescriptionValues(response.getWeatherObject());
+            createWeatherIconValue(response.getWeatherObject().getMain());
+        }
         createTimeOfDay(response.getDt_txt());
-        createWindValues(response.getWind());
-        createWeatherIconValue(response.getWeatherObject().getMain());
     }
 
-    @SuppressLint("DefaultLocale")
     @Override
     public void createTemperatureValues(Main main) {
-        String current = String.format("%.2f", toCelsiusFromKelvin(main.getTemp()));
-        String max = String.format("%.2f", toCelsiusFromKelvin(main.getTemp_max()));
-        String min = String.format("%.2f", toCelsiusFromKelvin(main.getTemp_min()));
-        String temperature = "Current: " + current + "C" + "\n Average: " + min + "C - " + max + "C";
-        viewHolderView.setTemperature(temperature);
+        viewHolderView.setCurrentTemperatureTextView(toCelsiusFromKelvin(main.getTemp()));
+        viewHolderView.setMinTemperatureTextView(toCelsiusFromKelvin(main.getTemp_min()));
+        viewHolderView.setMaxTemperatureTextView(toCelsiusFromKelvin(main.getTemp_max()));
+
     }
 
     @Override
     public void createWindValues(Wind wind) {
-        String windValues = "Wind is blowing " + wind.getSpeed() + "m/s" + " " + directionOfWind(wind.getDeg());
-        viewHolderView.setWind(windValues);
+        viewHolderView.setWindSpeedTextView(wind.getSpeed());
+        viewHolderView.setWindDirectionTextView(directionOfWind(wind.getDeg()));
     }
 
     @Override
     public void createPressureValues(Main main) {
-        String pressure = "Air pressure is: " + main.getPressure() + "hpa";
-        viewHolderView.setPressure(pressure);
+        viewHolderView.setPressureTextView(main.getPressure());
     }
 
     @Override
     public void createDescriptionValues(Weather weather) {
-        String desc = "Weather status: " + weather.getMain() + ", details: " + weather.getDescription();
-        viewHolderView.setDescription(desc);
+        viewHolderView.setDescription(weather.getDescription());
     }
 
     @Override
     public void createTimeOfDay(String timeOfDay) {
-        viewHolderView.setTimeOfDay(timeOfDay);
+        if (timeOfDay != null)
+            viewHolderView.setTimeOfDay(timeOfDay);
     }
 
     @Override
     public void createWeatherIconValue(String description) {
-        switch (description) {
-            case "Snow": {
-                viewHolderView.setWeatherIcon("13d.png");
-                break;
-            }
-            case "Rain": {
-                viewHolderView.setWeatherIcon("09d.png");
-                break;
-            }
-            case "Clear": {
-                viewHolderView.setWeatherIcon("01d.png");
-                break;
-            }
-            case "Mist": {
-                viewHolderView.setWeatherIcon("50d.png");
-                break;
-            }
-            case "Fog": {
-                viewHolderView.setWeatherIcon("50d.png");
-                break;
-            }
-            case "Haze": {
-                viewHolderView.setWeatherIcon("50d.png");
-                break;
-            }
+        if (description != null)
+            switch (description) {
+                case Constants.SNOW_CASE: {
+                    viewHolderView.setWeatherIcon(Constants.SNOW);
+                    break;
+                }
+                case Constants.RAIN_CASE: {
+                    viewHolderView.setWeatherIcon(Constants.RAIN);
+                    break;
+                }
+                case Constants.CLEAR_CASE: {
+                    viewHolderView.setWeatherIcon(Constants.SUN);
+                    break;
+                }
+                case Constants.MIST_CASE: {
+                    viewHolderView.setWeatherIcon(Constants.FOG);
+                    break;
+                }
+                case Constants.FOG_CASE: {
+                    viewHolderView.setWeatherIcon(Constants.FOG);
+                    break;
+                }
+                case Constants.HAZE_CASE: {
+                    viewHolderView.setWeatherIcon(Constants.FOG);
+                    break;
+                }
 
-            case "Clouds": {
-                viewHolderView.setWeatherIcon("03d.png");
-                break;
+                case Constants.CLOUD_CASE: {
+                    viewHolderView.setWeatherIcon(Constants.CLOUD);
+                    break;
+                }
             }
-        }
+    }
+
+    @Override
+    public void createHumidityValues(Main main) {
+        viewHolderView.setHumidityTextView(main.getHumidity());
     }
 
     @Override
@@ -103,10 +115,10 @@ public class ViewViewHolderPresenterImpl implements ViewHolderPresenter {
 
     @Override
     public String directionOfWind(double degrees) {
-        if (degrees >= 315 || degrees < 45) return "North";
-        if (degrees >= 45 && degrees < 135) return "East";
-        if (degrees >= 135 && degrees < 225) return "South";
-        if (degrees >= 225 && degrees < 315) return "West";
+        if (degrees >= 315 || degrees < 45) return Constants.WIND_NORTH;
+        if (degrees >= 45 && degrees < 135) return Constants.WIND_WEST;
+        if (degrees >= 135 && degrees < 225) return Constants.WIND_SOUTH;
+        if (degrees >= 225 && degrees < 315) return Constants.WIND_EAST;
         return null;
     }
 }

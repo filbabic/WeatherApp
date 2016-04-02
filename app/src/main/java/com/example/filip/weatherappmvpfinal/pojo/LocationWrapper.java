@@ -4,7 +4,7 @@ package com.example.filip.weatherappmvpfinal.pojo;
  * Created by Filip on 10/02/2016.
  */
 public class LocationWrapper {
-    private String location;
+    private final String location;
 
     public LocationWrapper(String location) {
         this.location = location;

@@ -44,22 +44,30 @@ public class CustomForecastRecyclerViewAdapter extends RecyclerView.Adapter<Cust
     }
 
     protected class ViewHolder extends RecyclerView.ViewHolder implements ViewHolderView {
-        private ViewHolderPresenter presenter;
-        private TextView mTemperature;
-        private TextView mPressure;
-        private TextView mWind;
-        private TextView mDescription;
-        private TextView mTimeOfDay;
-        private ImageView mWeatherIcon;
+        private final ViewHolderPresenter presenter;
+        private final TextView mCurrentTemperature;
+        private final TextView mMinTemperature;
+        private final TextView mMaxTemperature;
+        private final TextView mPressure;
+        private final TextView mHumidity;
+        private final TextView mWindSpeed;
+        private final TextView mWindDirection;
+        private final TextView mDescription;
+        private final TextView mTimeOfDay;
+        private final ImageView mWeatherIcon;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mTemperature = (TextView) itemView.findViewById(R.id.forecast_view_temperature_text_view);
-            mPressure = (TextView) itemView.findViewById(R.id.forecast_view_pressure_text_view);
-            mWind = (TextView) itemView.findViewById(R.id.forecast_view_wind_text_view);
-            mDescription = (TextView) itemView.findViewById(R.id.forecast_view_description_text_view);
-            mTimeOfDay = (TextView) itemView.findViewById(R.id.forecast_view_time_of_day_text_view);
-            mWeatherIcon = (ImageView) itemView.findViewById(R.id.forecast_view_weather_icon_image_view);
+            mCurrentTemperature = (TextView) itemView.findViewById(R.id.weather_display_current_temperature_text_view);
+            mMinTemperature = (TextView) itemView.findViewById(R.id.weather_fragment_min_temperature_text_view);
+            mMaxTemperature = (TextView) itemView.findViewById(R.id.weather_fragment_max_temperature_text_view);
+            mHumidity = (TextView) itemView.findViewById(R.id.weather_display_humidity_text_view);
+            mWindDirection = (TextView) itemView.findViewById(R.id.weather_display_wind_direction_text_view);
+            mPressure = (TextView) itemView.findViewById(R.id.weather_display_pressure_text_view);
+            mWindSpeed = (TextView) itemView.findViewById(R.id.weather_display_wind_text_view);
+            mDescription = (TextView) itemView.findViewById(R.id.weather_display_detailed_description_text_view);
+            mTimeOfDay = (TextView) itemView.findViewById(R.id.weather_display_forecast_time_of_day_text_view);
+            mWeatherIcon = (ImageView) itemView.findViewById(R.id.weather_display_weather_icon_image_view);
             presenter = new ViewViewHolderPresenterImpl(this);
         }
 
@@ -69,18 +77,38 @@ public class CustomForecastRecyclerViewAdapter extends RecyclerView.Adapter<Cust
         }
 
         @Override
-        public void setTemperature(String temperature) {
-            mTemperature.setText(temperature);
+        public void setCurrentTemperatureTextView(double currentTemperature) {
+            mCurrentTemperature.setText(itemView.getContext().getString(R.string.current_temperature_message, currentTemperature));
         }
 
         @Override
-        public void setPressure(String pressure) {
-            mPressure.setText(pressure);
+        public void setMinTemperatureTextView(double minTemperature) {
+            mMinTemperature.setText(itemView.getContext().getString(R.string.minimum_temperature_message, minTemperature));
         }
 
         @Override
-        public void setWind(String wind) {
-            mWind.setText(wind);
+        public void setMaxTemperatureTextView(double maxTemperature) {
+            mMaxTemperature.setText(itemView.getContext().getString(R.string.maximum_temperature_message, maxTemperature));
+        }
+
+        @Override
+        public void setPressureTextView(double pressure) {
+            mPressure.setText(itemView.getContext().getString(R.string.pressure_message, pressure));
+        }
+
+        @Override
+        public void setHumidityTextView(int humidity) {
+            mHumidity.setText(itemView.getContext().getString(R.string.humidity_message, humidity));
+        }
+
+        @Override
+        public void setWindSpeedTextView(double windSpeed) {
+            mWindSpeed.setText(itemView.getContext().getString(R.string.wind_speed_message, windSpeed));
+        }
+
+        @Override
+        public void setWindDirectionTextView(String direction) {
+            mWindDirection.setText(itemView.getContext().getString(R.string.wind_direction_message, direction));
         }
 
         @Override

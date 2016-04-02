@@ -1,8 +1,8 @@
 package com.example.filip.weatherappmvpfinal.pojo;
 
 public class Wind {
-    private double speed;
-    private double deg;
+    private final double speed;
+    private final double deg;
 
     public Wind(double speed, double deg) {
         this.speed = speed;

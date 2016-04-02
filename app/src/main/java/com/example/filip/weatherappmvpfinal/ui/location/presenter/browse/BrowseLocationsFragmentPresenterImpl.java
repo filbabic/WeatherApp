@@ -1,5 +1,6 @@
 package com.example.filip.weatherappmvpfinal.ui.location.presenter.browse;
 
+import com.example.filip.weatherappmvpfinal.constants.Constants;
 import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
 
@@ -22,6 +23,6 @@ public class BrowseLocationsFragmentPresenterImpl implements BrowseLocationsFrag
 
     @Override
     public ArrayList<LocationWrapper> getLocationsFromDatabase() {
-        return databaseHelper.getLocations();
+        return databaseHelper.getLocations(Constants.LOCATIONS_DATABASE);
     }
 }

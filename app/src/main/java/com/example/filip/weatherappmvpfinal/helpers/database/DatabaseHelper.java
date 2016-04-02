@@ -11,17 +11,15 @@ import java.util.ArrayList;
 public interface DatabaseHelper {
     void addLocation(String locationName);
 
-    void saveWeatherResponseToDatabase(WeatherResponse response, String city); //
+    void deleteLocation(String locationName);
 
-    void updateWeatherResponseInDatabase(WeatherResponse response, String city); //
+    void saveWeatherResponseToDatabase(WeatherResponse response);
 
-    boolean checkIfLocationIsCached(String city);//
+    void updateWeatherResponseInDatabase(WeatherResponse response);
 
-    void deleteLocation(String locationName); //
+    boolean alreadyExists(String cityName, String whichDatabase);
 
-    boolean checkIfLocationExists(String locationName);
+    WeatherResponse getCachedResponseFromWeatherDatabase(String city);
 
-    ArrayList<LocationWrapper> getLocations(); //
-
-    WeatherResponse getResponseFromDatabase(String city); //
+    ArrayList<LocationWrapper> getLocations(String whichDatabase);
 }

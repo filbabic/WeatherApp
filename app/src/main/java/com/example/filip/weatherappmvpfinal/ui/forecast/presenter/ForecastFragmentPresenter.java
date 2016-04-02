@@ -1,4 +1,4 @@
-package com.example.filip.weatherappmvpfinal.ui.weather.presenter;
+package com.example.filip.weatherappmvpfinal.ui.forecast.presenter;
 
 /**
  * Created by Filip on 16/02/2016.

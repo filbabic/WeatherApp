@@ -23,6 +23,8 @@ public interface ViewHolderPresenter {
 
     void createWeatherIconValue(String description);
 
+    void createHumidityValues(Main main);
+
     double toCelsiusFromKelvin(double temperature);
 
     String directionOfWind(double degrees);

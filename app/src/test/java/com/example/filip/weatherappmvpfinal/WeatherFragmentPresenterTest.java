@@ -1,5 +1,6 @@
 package com.example.filip.weatherappmvpfinal;
 
+import com.example.filip.weatherappmvpfinal.constants.Constants;
 import com.example.filip.weatherappmvpfinal.helpers.ResponseListener;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
 import com.example.filip.weatherappmvpfinal.helpers.networking.NetworkingHelper;
@@ -17,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,39 +46,37 @@ public class WeatherFragmentPresenterTest {
     @Mock
     private ResponseListener<WeatherResponse> listener;
 
-    private String cityMock = "cityMock";
+    private final String cityMock = "cityMock";
+    private final String emptyString = "";
 
     @Before
     public void setUp() throws Exception {
         presenter = new WeatherFragmentPresenterImpl(weatherFragmentView, databaseHelper, networkingHelper);
-        Weather weather = new Weather("Snow", "");
-        weatherResponse = new WeatherResponse(new Weather[]{weather}, main, wind, null);
-    }
-
-    @Test
-    public void shouldCallCreateWeatherStringsForView() throws Exception {
-        presenter.getLastStoredRequestFromDatabase(cityMock);
-
-        verify(databaseHelper).getResponseFromDatabase(cityMock);
+        Weather weather = new Weather(Constants.SNOW_CASE, emptyString);
+        weatherResponse = new WeatherResponse(new Weather[]{weather}, main, wind, null, cityMock);
     }
 
     @Test
     public void shouldCallViewOnFailure() throws Exception {
-        when(databaseHelper.getResponseFromDatabase(cityMock)).thenReturn(null);
+        when(databaseHelper.getCachedResponseFromWeatherDatabase(anyString())).thenReturn(null);
 
         presenter.getLastStoredRequestFromDatabase(cityMock);
+        verify(databaseHelper).getCachedResponseFromWeatherDatabase(cityMock);
         verify(weatherFragmentView).onFailure();
     }
 
     @Test
     public void shouldCallViewSetTextMethods() throws Exception {
-        when(databaseHelper.getResponseFromDatabase(cityMock)).thenReturn(weatherResponse);
+        when(databaseHelper.getCachedResponseFromWeatherDatabase(cityMock)).thenReturn(weatherResponse);
         presenter.getLastStoredRequestFromDatabase(cityMock);
-        verify(databaseHelper).getResponseFromDatabase(cityMock);
-        verify(weatherFragmentView).setDescriptionValues("");
-        verify(weatherFragmentView).setPressureValues("0.0 hpa");
-        verify(weatherFragmentView).setTemperatureValues("Current: -273.00C\n Average: -273.00C - -273.00C");
-        verify(weatherFragmentView).setWeatherIcon("13d.png");
-        verify(weatherFragmentView).setWindValues("Wind: 0.0km/h");
+
+        verify(databaseHelper).getCachedResponseFromWeatherDatabase(cityMock);
+        verify(weatherFragmentView).setDescriptionValues(emptyString);
+        verify(weatherFragmentView).setPressureValues(0);
+        verify(weatherFragmentView).setCurrentTemperatureValues(-273);
+        verify(weatherFragmentView).setMinTemperatureValues(-273);
+        verify(weatherFragmentView).setMaxTemperatureValues(-273);
+        verify(weatherFragmentView).setWeatherIcon(Constants.SNOW);
+        verify(weatherFragmentView).setWindValues(0);
     }
 }

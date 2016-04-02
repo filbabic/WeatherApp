@@ -1,5 +1,6 @@
 package com.example.filip.weatherappmvpfinal.ui.location.presenter.add;
 
+import com.example.filip.weatherappmvpfinal.constants.Constants;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
 import com.example.filip.weatherappmvpfinal.ui.location.view.add.AddLocationView;
 
@@ -17,13 +18,10 @@ public class AddLocationPresenterImpl implements AddLocationFragmentPresenter {
 
     @Override
     public void addLocationToDatabase(String cityName) {
-        if (!cityName.equals("")) {
-            if (!databaseHelper.checkIfLocationExists(cityName)) {
-                databaseHelper.addLocation(cityName);
-                addLocationView.onSuccess();
-            } else
-                addLocationView.onLocationAlreadyExistsError();
-        } else
-            addLocationView.onEmptyStringRequestError();
+        if (cityName.equals("")) addLocationView.onEmptyStringRequestError();
+        else if (!databaseHelper.alreadyExists(cityName, Constants.LOCATIONS_DATABASE)) {
+            databaseHelper.addLocation(cityName);
+            addLocationView.onSuccess();
+        } else addLocationView.onLocationAlreadyExistsError();
     }
 }

@@ -5,11 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
+import com.example.filip.weatherappmvpfinal.pojo.LocationWrapper;
 import com.example.filip.weatherappmvpfinal.pojo.Main;
 import com.example.filip.weatherappmvpfinal.pojo.Weather;
 import com.example.filip.weatherappmvpfinal.pojo.WeatherResponse;
 import com.example.filip.weatherappmvpfinal.pojo.Wind;
+
+import java.util.ArrayList;
 
 /**
  * Created by Filip on 27/03/2016.
@@ -58,18 +62,18 @@ public class WeatherDatabase extends SQLiteOpenHelper {
         this.onCreate(db);
     }
 
-    public void addWeatherResponseToDatabase(WeatherResponse responseToStore, String city) {
+    public void addWeatherResponseToDatabase(WeatherResponse responseToStore) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = createValues(responseToStore, city);
+        ContentValues values = createValues(responseToStore);
         if (values != null)
-            db.insert(TABLE_WEATHER, null, values);
+            db.insert(TABLE_WEATHER, null, values); //never inserts an empty response
         db.close();
     }
 
-    public void updateWeatherResponseInDatabase(WeatherResponse responseToUpdate, String city) {
+    public void updateWeatherResponseInDatabase(WeatherResponse responseToUpdate) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String args[] = new String[]{city};
-        ContentValues values = createValues(responseToUpdate, city);
+        String args[] = new String[]{responseToUpdate.getCityName()};
+        ContentValues values = createValues(responseToUpdate);
         if (values != null)
             db.update(TABLE_WEATHER, values, COLUMN_CITY + "=?", args); //update where the city column values equals city to edit
         db.close();
@@ -82,13 +86,13 @@ public class WeatherDatabase extends SQLiteOpenHelper {
         db.close();
     }
 
-    private ContentValues createValues(WeatherResponse response, String city) {
+    private ContentValues createValues(@NonNull WeatherResponse response) {
         ContentValues values = new ContentValues();
         Weather weather = response.getWeatherObject();
         Main main = response.getMain();
         Wind wind = response.getWind();
         if (weather != null && wind != null && main != null) {
-            values.put(COLUMN_CITY, city);
+            values.put(COLUMN_CITY, response.getCityName());
             values.put(COLUMN_DESCRIPTION, weather.getDescription());
             values.put(COLUMN_MAIN_TEMPERATURE, main.getTemp());
             values.put(COLUMN_MAIN_MIN_TEMPERATURE, main.getTemp_min());
@@ -106,7 +110,7 @@ public class WeatherDatabase extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_WEATHER, COLUMNS, null, null, null, null, null, null);
         WeatherResponse response = new WeatherResponse();
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            if (cursor.getString(1).equalsIgnoreCase(city)) {
+            if (cursor.getString(1).equalsIgnoreCase(city)) { //find the corresponding response cache and return it
                 Weather weather = new Weather(null, cursor.getString(2));
                 Main main = new Main(cursor.getDouble(3), cursor.getDouble(4), cursor.getDouble(5), cursor.getInt(6), cursor.getDouble(7));
                 Wind wind = new Wind(cursor.getDouble(8), 0);
@@ -120,16 +124,18 @@ public class WeatherDatabase extends SQLiteOpenHelper {
         return response;
     }
 
-    public boolean checkIfLocationIsCachedInDatabase(String city) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_WEATHER, COLUMNS, null, null, null, null, null, null);
+    public ArrayList<LocationWrapper> getLocations() {
+        ArrayList<LocationWrapper> locationWrappers = new ArrayList<>();
+
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.query(TABLE_WEATHER, null, null, null, null, null, null);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            if (cursor.getString(1).equalsIgnoreCase(city)) {
-                cursor.close();
-                db.close();
-                return true;
-            }
+            String city = cursor.getString(cursor.getColumnIndex(COLUMN_CITY));
+            LocationWrapper locationWrapper = new LocationWrapper(city);
+            locationWrappers.add(locationWrapper);
         }
-        return false;
+        cursor.close();
+        database.close();
+        return locationWrappers;
     }
 }

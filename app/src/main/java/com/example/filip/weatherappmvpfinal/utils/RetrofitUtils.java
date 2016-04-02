@@ -1,4 +1,4 @@
-package com.example.filip.weatherappmvpfinal.helpers.networking;
+package com.example.filip.weatherappmvpfinal.utils;
 
 import com.example.filip.weatherappmvpfinal.constants.Constants;
 
@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by Filip on 24/03/2016.
  */
-public class RetrofitRequestHelper {
+public class RetrofitUtils {
 
     public static Map<String, String> createQueryMap(String city) {
         Map<String, String> map = new HashMap<>();

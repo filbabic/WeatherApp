@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.filip.weatherappmvpfinal.helpers.database.DataManagerImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
 import com.example.filip.weatherappmvpfinal.ui.location.presenter.add.AddLocationFragmentPresenter;
@@ -50,12 +51,12 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onLocationAlreadyExistsError() {
-        Toast.makeText(getActivity().getApplicationContext(), R.string.location_already_exists_toast_message, Toast.LENGTH_SHORT).show();
+        mEnterLocationNameEditText.setError(getActivity().getString(R.string.location_already_exists_error_message));
     }
 
     @Override
     public void onEmptyStringRequestError() {
-        Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.empty_location_string_error_toast_message), Toast.LENGTH_SHORT).show();
+        mEnterLocationNameEditText.setError(getActivity().getString(R.string.empty_location_string_error_message));
     }
 
     private void initUI(View view) {
@@ -66,7 +67,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
 
     private void initPresenter() {
         LocationDatabase database = new LocationDatabase(getActivity());
-        presenter = new AddLocationPresenterImpl(this, new DatabaseHelperImpl(database, null));
+        presenter = new AddLocationPresenterImpl(this, new DatabaseHelperImpl(database, null, new DataManagerImpl()));
     }
 
     @Override

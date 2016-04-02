@@ -3,6 +3,7 @@ package com.example.filip.weatherappmvpfinal.ui.main.view;
 import android.content.Intent;
 import android.location.Geocoder;
 import android.location.Location;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.filip.weatherappmvpfinal.helpers.database.DataManagerImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelperImpl;
 import com.example.filip.weatherappmvpfinal.helpers.database.LocationDatabase;
 import com.example.filip.weatherappmvpfinal.helpers.location.LocationHelper;
@@ -26,11 +28,10 @@ import com.example.filip.weatherappmvpfinal.ui.main.presenter.MainActivityPresen
 import com.example.filip.weatherappmvpfinal.ui.main.presenter.MainActivityPresenterImpl;
 import com.example.filip.weatherappmvpfinal.ui.location.view.add.AddNewLocationActivity;
 import com.example.filip.weatherappmvpfinal.ui.location.view.browse.BrowseLocationsActivity;
+import com.example.filip.weatherappmvpfinal.utils.NetworkUtils;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 
@@ -55,10 +56,11 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
     @Override
     protected void onStart() {
         super.onStart();
-        helper.connectClient();
         initPresenter();
         initAdapter();
         initNavigationDrawer();
+        if (NetworkUtils.checkIfInternetConnectionIsAvailable(this))
+            helper.connectClient();
         updateAdapterData();
     }
 
@@ -68,12 +70,11 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
         helper.disconnectClient();
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case (android.R.id.home):
-                drawerLayout.openDrawer(GravityCompat.START); //overrides the back button
+                drawerLayout.openDrawer(GravityCompat.START);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
 
     private void initPresenter() {
         LocationDatabase database = new LocationDatabase(this);
-        presenter = new MainActivityPresenterImpl(this, new DatabaseHelperImpl(database, null));
+        presenter = new MainActivityPresenterImpl(this, new DatabaseHelperImpl(database, null, new DataManagerImpl()));
     }
 
     private void initAdapter() {
@@ -128,7 +129,8 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
     public void onConnected(@Nullable Bundle bundle) {
         Location location = helper.getCurrentLocation();
         if (location != null) {
-            addCurrentLocationToDatabase(helper.getLocationFromGeocoder(location.getLatitude(), location.getLongitude()));
+            String currentLocation = helper.getLocationFromGeocoder(location.getLatitude(), location.getLongitude());
+            addCurrentLocationToDatabase(currentLocation);
         }
     }
 
@@ -138,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
 
     @Override
     public void onSuccess(String locationName) {
-        Toast.makeText(MainActivity.this, getString(R.string.added_current_location_toast_message) + locationName, Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, getString(R.string.added_current_location_toast_message, locationName), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -152,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
     }
 
     @Override
-    public void addCurrentLocationToDatabase(String location) {
+    public void addCurrentLocationToDatabase(@NonNull String location) {
         presenter.receiveDataFromLocationService(location);
     }
 
@@ -160,10 +162,12 @@ public class MainActivity extends AppCompatActivity implements MainView, GoogleA
         switch (itemID) {
             case R.id.menu_add_new_location: {
                 startActivity(new Intent(this, AddNewLocationActivity.class));
+                drawerLayout.closeDrawers();
                 break;
             }
             case R.id.menu_browse_recent_locations: {
                 startActivity(new Intent(this, BrowseLocationsActivity.class));
+                drawerLayout.closeDrawers();
                 break;
             }
         }

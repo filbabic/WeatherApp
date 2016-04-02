@@ -7,10 +7,24 @@ import com.example.filip.weatherappmvpfinal.pojo.WeatherResponse;
  */
 public interface ViewHolderView {
     void sendDataToPresenter(WeatherResponse response);
-    void setTemperature(String temperature);
-    void setPressure(String pressure);
-    void setWind(String wind);
+
+    void setCurrentTemperatureTextView(double currentTemperature);
+
+    void setMinTemperatureTextView(double minTemperature);
+
+    void setMaxTemperatureTextView(double maxTemperature);
+
+    void setPressureTextView(double pressure);
+
+    void setHumidityTextView(int humidity);
+
+    void setWindSpeedTextView(double windSpeed);
+
+    void setWindDirectionTextView(String direction);
+
     void setDescription(String description);
+
     void setWeatherIcon(String weatherIcon);
+
     void setTimeOfDay(String timeOfDay);
 }

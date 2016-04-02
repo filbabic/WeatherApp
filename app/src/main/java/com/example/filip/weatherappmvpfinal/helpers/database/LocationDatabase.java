@@ -59,16 +59,10 @@ public class LocationDatabase extends SQLiteOpenHelper {
     public void addLocation(@NonNull String locationName) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_CITY, locationName);
+
         SQLiteDatabase database = this.getWritableDatabase();
         database.insert(TABLE_LOCATIONS, null, contentValues);
         database.close();
-    }
-
-    public boolean checkIfLocationAlreadyExistsInDatabase(String locationName) {
-        for (LocationWrapper x : this.getLocations()) {
-            if (x.getLocation().equalsIgnoreCase(locationName)) return true;
-        }
-        return false;
     }
 
     public void deleteLocation(String locationName) {

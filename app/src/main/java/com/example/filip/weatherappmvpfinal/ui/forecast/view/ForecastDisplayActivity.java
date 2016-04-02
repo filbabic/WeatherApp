@@ -1,4 +1,4 @@
-package com.example.filip.weatherappmvpfinal.ui.forecast;
+package com.example.filip.weatherappmvpfinal.ui.forecast.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.filip.weatherappmvpfinal.R;
 import com.example.filip.weatherappmvpfinal.constants.Constants;
-import com.example.filip.weatherappmvpfinal.ui.weather.view.ForecastFragment;
 
 /**
  * Created by Filip on 26/03/2016.
@@ -43,7 +42,7 @@ public class ForecastDisplayActivity extends AppCompatActivity {
     private void initToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (mToolbar != null) {
-            mToolbar.setTitle("Forecast: " + getIntent().getStringExtra(Constants.CITY_BUNDLE_KEY));
+            mToolbar.setTitle(getString(R.string.forecast_toolbar_title, getIntent().getStringExtra(Constants.CITY_BUNDLE_KEY)));
             setSupportActionBar(mToolbar);
         }
         ActionBar actionBar = getSupportActionBar();

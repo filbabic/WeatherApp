@@ -1,21 +1,20 @@
 package com.example.filip.weatherappmvpfinal.ui.weather.presenter;
 
-import android.annotation.SuppressLint;
-
+import com.example.filip.weatherappmvpfinal.constants.Constants;
 import com.example.filip.weatherappmvpfinal.helpers.ResponseListener;
 import com.example.filip.weatherappmvpfinal.helpers.database.DatabaseHelper;
 import com.example.filip.weatherappmvpfinal.helpers.networking.NetworkingHelper;
-import com.example.filip.weatherappmvpfinal.helpers.networking.NetworkingHelperImpl;
 import com.example.filip.weatherappmvpfinal.pojo.Main;
 import com.example.filip.weatherappmvpfinal.pojo.Weather;
 import com.example.filip.weatherappmvpfinal.pojo.WeatherResponse;
 import com.example.filip.weatherappmvpfinal.pojo.Wind;
 import com.example.filip.weatherappmvpfinal.ui.weather.view.WeatherFragmentView;
+import com.example.filip.weatherappmvpfinal.utils.StringUtils;
 
 /**
  * Created by Filip on 26/03/2016.
  */
-public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter {
+public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter, ResponseListener<WeatherResponse> {
     private final NetworkingHelper networkingHelper;
     private final WeatherFragmentView weatherFragmentView;
     private final DatabaseHelper databaseHelper;
@@ -28,30 +27,32 @@ public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter {
 
     @Override
     public void sendRequestToAPI(final String city) {
-        networkingHelper.requestWeatherFromAPI(city, new ResponseListener<WeatherResponse>() {
-            @Override
-            public void onSuccess(WeatherResponse callback) {
-                if (callback != null) {
-                    createWeatherStringsForView(callback);
-                    if (databaseHelper.checkIfLocationIsCached(city))
-                        databaseHelper.updateWeatherResponseInDatabase(callback, city);
-                    else databaseHelper.saveWeatherResponseToDatabase(callback, city);
-                }
-            }
+        networkingHelper.requestWeatherFromAPI(city, this);
+    }
 
-            @Override
-            public void onFailure(Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        });
+    @Override
+    public void onSuccess(WeatherResponse callback) {
+        if (callback != null) {
+            if (databaseHelper.alreadyExists(callback.getCityName(), Constants.WEATHER_DATABASE)) {
+                databaseHelper.updateWeatherResponseInDatabase(callback);
+            } else databaseHelper.saveWeatherResponseToDatabase(callback);
+            createWeatherStringsForView(callback);
+        }
+    }
+
+    @Override
+    public void onFailure(Throwable throwable) {
+        StringUtils.logError(throwable);
+        weatherFragmentView.onFailure();
     }
 
     @Override
     public void getLastStoredRequestFromDatabase(String city) {
-        WeatherResponse response = databaseHelper.getResponseFromDatabase(city);
+        WeatherResponse response = databaseHelper.getCachedResponseFromWeatherDatabase(city);
         if (response != null)
             createWeatherStringsForView(response);
-        else weatherFragmentView.onFailure();
+        else
+            weatherFragmentView.onFailure();
     }
 
     @Override
@@ -71,60 +72,54 @@ public class WeatherFragmentPresenterImpl implements WeatherFragmentPresenter {
             createWindValues(response.getWind());
     }
 
-    @SuppressLint("DefaultLocale")
     private void createTemperatureValues(Main main) {
-        String current = String.format("%.2f", toCelsiusFromKelvin(main.getTemp()));
-        String max = String.format("%.2f", toCelsiusFromKelvin(main.getTemp_max()));
-        String min = String.format("%.2f", toCelsiusFromKelvin(main.getTemp_min()));
-        String temperature = "Current: " + current + "C" + "\n Average: " + min + "C - " + max + "C";
-        weatherFragmentView.setTemperatureValues(temperature);
+        weatherFragmentView.setMinTemperatureValues(toCelsiusFromKelvin(main.getTemp_min()));
+        weatherFragmentView.setMaxTemperatureValues(toCelsiusFromKelvin(main.getTemp_max()));
+        weatherFragmentView.setCurrentTemperatureValues(toCelsiusFromKelvin(main.getTemp()));
     }
 
     private void createWindValues(Wind wind) {
-        String windValues = "Wind: " + wind.getSpeed() + "km/h";
-        weatherFragmentView.setWindValues(windValues);
+        weatherFragmentView.setWindValues(wind.getSpeed());
     }
 
     private void createPressureValues(Main main) {
-        String pressure = main.getPressure() + " hpa";
-        weatherFragmentView.setPressureValues(pressure);
+        weatherFragmentView.setPressureValues(main.getPressure());
     }
 
     private void createDescriptionValues(Weather weather) {
-        String description = weather.getDescription();
-        weatherFragmentView.setDescriptionValues(description);
+        weatherFragmentView.setDescriptionValues(weather.getDescription());
     }
 
     private void createWeatherIconValue(String description) {
         if (description != null)
             switch (description) {
-                case "Snow": {
-                    weatherFragmentView.setWeatherIcon("13d.png");
+                case Constants.SNOW_CASE: {
+                    weatherFragmentView.setWeatherIcon(Constants.SNOW);
                     break;
                 }
-                case "Rain": {
-                    weatherFragmentView.setWeatherIcon("09d.png");
+                case Constants.RAIN_CASE: {
+                    weatherFragmentView.setWeatherIcon(Constants.RAIN);
                     break;
                 }
-                case "Clear": {
-                    weatherFragmentView.setWeatherIcon("01d.png");
+                case Constants.CLEAR_CASE: {
+                    weatherFragmentView.setWeatherIcon(Constants.SUN);
                     break;
                 }
-                case "Mist": {
-                    weatherFragmentView.setWeatherIcon("50d.png");
+                case Constants.MIST_CASE: {
+                    weatherFragmentView.setWeatherIcon(Constants.FOG);
                     break;
                 }
-                case "Fog": {
-                    weatherFragmentView.setWeatherIcon("50d.png");
+                case Constants.FOG_CASE: {
+                    weatherFragmentView.setWeatherIcon(Constants.FOG);
                     break;
                 }
-                case "Haze": {
-                    weatherFragmentView.setWeatherIcon("50d.png");
+                case Constants.HAZE_CASE: {
+                    weatherFragmentView.setWeatherIcon(Constants.FOG);
                     break;
                 }
 
-                case "Clouds": {
-                    weatherFragmentView.setWeatherIcon("03d.png");
+                case Constants.CLOUD_CASE: {
+                    weatherFragmentView.setWeatherIcon(Constants.CLOUD);
                     break;
                 }
             }
